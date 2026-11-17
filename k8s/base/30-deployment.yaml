@@ -20,7 +20,7 @@ spec:
           labelSelector: {matchLabels: {app: signup-app}}
       containers:
         - name: app
-          image: <ACCOUNT>.dkr.ecr.us-east-1.amazonaws.com/signup-app:<TAG>
+          image: signup-app
           ports: [{containerPort: 8000}]
           envFrom: [{configMapRef: {name: signup-config}}]
           env:

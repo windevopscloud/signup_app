@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: signup-config
+    literals:
+      - DB_HOST=signup-poc.cm7wmyq46d50.us-east-1.rds.amazonaws.com
+      - DB_NAME=signuprds
+      - DB_SSLMODE=require
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - MAIL_FROM=windevopscloud+sender@gmail.com
+      - COOKIE_SECURE=true
+
+images:
+  - name: signup-app
+    newName: 880420039066.dkr.ecr.us-east-1.amazonaws.com/signup-app
+    newTag: "1.0.0"
+
+patches:
+  - patch: |-
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: signup-app
+        annotations:
+          eks.amazonaws.com/role-arn: arn:aws:iam::880420039066:role/signup-app-secrets-poc-role
