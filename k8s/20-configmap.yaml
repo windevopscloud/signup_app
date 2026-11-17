@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: signup-config
+  namespace: default
+data:
+  DB_HOST: "<rds-endpoint>"          # terraform output db_endpoint
+  DB_NAME: "signuprds"
+  DB_SSLMODE: "require"
+  SMTP_HOST: "smtp.gmail.com"
+  SMTP_PORT: "587"
+  MAIL_FROM: "<your-gmail-address>"
+  COOKIE_SECURE: "true"              # use "false" only when testing over plain http

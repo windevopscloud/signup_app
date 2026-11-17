@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signup-app
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: signup-app}
+  template:
+    metadata:
+      labels: {app: signup-app}
+    spec:
+      serviceAccountName: signup-app
+      securityContext: {runAsNonRoot: true, runAsUser: 10001}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: {matchLabels: {app: signup-app}}
+      containers:
+        - name: app
+          image: <ACCOUNT>.dkr.ecr.us-east-1.amazonaws.com/signup-app:<TAG>
+          ports: [{containerPort: 8000}]
+          envFrom: [{configMapRef: {name: signup-config}}]
+          env:
+            - {name: DB_USER_FILE,      value: /mnt/secrets-store/db-user}
+            - {name: DB_PASSWORD_FILE,  value: /mnt/secrets-store/db-password}
+            - {name: SMTP_USER_FILE,    value: /mnt/secrets-store/smtp-user}
+            - {name: SMTP_PASSWORD_FILE, value: /mnt/secrets-store/smtp-password}
+            - {name: SECRET_KEY_FILE,   value: /mnt/secrets-store/secret-key}
+          volumeMounts:
+            - {name: secrets, mountPath: /mnt/secrets-store, readOnly: true}
+          readinessProbe: {httpGet: {path: /readyz, port: 8000}, periodSeconds: 5}
+          livenessProbe: {httpGet: {path: /healthz, port: 8000}, periodSeconds: 10}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {memory: 256Mi}
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+      volumes:
+        - name: secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: signup-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signup-app
+  namespace: default
+spec:
+  type: ClusterIP
+  selector: {app: signup-app}
+  ports: [{port: 80, targetPort: 8000}]

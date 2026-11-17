@@ -1,0 +1,41 @@
+# Local test: docker compose up --build
+# App: http://localhost:8000   Mail inbox (Mailpit): http://localhost:8025
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: signup
+      POSTGRES_USER: signup
+      POSTGRES_PASSWORD: localpass
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U signup -d signup"]
+      interval: 3s
+      retries: 20
+  mailpit:
+    image: axllent/mailpit
+    ports: ["8025:8025"]
+  init:
+    build: .
+    command: ["python", "-m", "app.init_db"]
+    environment: &env
+      DB_HOST: db
+      DB_NAME: signup
+      DB_USER: signup
+      DB_PASSWORD: localpass
+      SECRET_KEY: change-me-local-only
+      COOKIE_SECURE: "false"
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_STARTTLS: "false"
+      MAIL_FROM: noreply@example.test
+    depends_on: {db: {condition: service_healthy}}
+  app:
+    build: .
+    environment: *env
+    ports: ["8000:8000"]
+    depends_on:
+      init: {condition: service_completed_successfully}
+      mailpit: {condition: service_started}
+volumes:
+  pgdata:

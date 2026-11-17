@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Join us{% endblock %}</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:26rem;margin:3rem auto;padding:0 1rem;color:#1d2330}
+  h1{font-size:1.4rem} label{display:block;margin:.8rem 0 .2rem}
+  input{width:100%;padding:.5rem;box-sizing:border-box;font-size:1rem}
+  button,.btn{margin-top:1rem;padding:.55rem 1rem;font-size:1rem;cursor:pointer}
+  .msg{padding:.5rem .75rem;margin:.5rem 0;border-radius:4px}
+  .msg.error{background:#fde8e8;color:#8a1c1c} .msg.info{background:#e6f0fe;color:#1a3d7c}
+  nav a{margin-right:1rem} form.inline{display:inline}
+</style>
+</head>
+<body>
+{% with msgs = get_flashed_messages(with_categories=true) %}
+  {% for cat, m in msgs %}<div class="msg {{ cat }}">{{ m }}</div>{% endfor %}
+{% endwith %}
+{% block body %}{% endblock %}
+</body>
+</html>
