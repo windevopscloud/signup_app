@@ -9,7 +9,7 @@ generatorOptions:
 configMapGenerator:
   - name: signup-config
     literals:
-      - DB_HOST=signup-poc.cm7wmyq46d50.us-east-1.rds.amazonaws.com
+      - DB_HOST=__DB_HOST__
       - DB_NAME=signuprds
       - DB_SSLMODE=require
       - SMTP_HOST=smtp.gmail.com
@@ -19,8 +19,8 @@ configMapGenerator:
 
 images:
   - name: signup-app
-    newName: 880420039066.dkr.ecr.us-east-1.amazonaws.com/signup-app
-    newTag: "1.0.0"
+    newName: __REGISTRY__/signup-app
+    newTag: "__IMAGE_TAG__"
 
 patches:
   - patch: |-
@@ -29,4 +29,4 @@ patches:
       metadata:
         name: signup-app
         annotations:
-          eks.amazonaws.com/role-arn: arn:aws:iam::880420039066:role/signup-app-secrets-poc-role
+          eks.amazonaws.com/role-arn: arn:aws:iam::__ACCOUNT_ID__:role/signup-app-secrets-poc-role
