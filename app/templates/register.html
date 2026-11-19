@@ -8,5 +8,5 @@
   <label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required>
   <button>Send me a 4-digit code</button>
 </form>
-<p class="links"><a href="{{ url_for('login') }}">Already registered? Log in</a></p>
+<p class="links"><a href="{{ url_for('login') }}">Already registered? Log in</a> &middot; <a href="{{ url_for('forgot') }}">Forgot password?</a></p>
 {% endblock %}

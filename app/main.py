@@ -199,21 +199,22 @@ def create_app():
             return render_template("register.html"), 400
         with db.connect() as conn:
             exists = conn.execute("SELECT 1 AS x FROM users WHERE email=%s", (email,)).fetchone()
+            if exists:
+                flash("This e-mail is already registered. Log in, or use Forgot password.", "error")
+                return render_template("register.html"), 409
             try:
                 cid, code, _ = create_challenge(conn, "register", email, name=name)
             except RateLimited:
                 flash("A code was sent a moment ago. Wait a minute before asking again.", "error")
                 return render_template("register.html"), 429
-        # An address that is already registered gets the same screen but no mail,
-        # so the form does not reveal who has an account.
-        if not exists and not try_send(
+        if not try_send(
                 email, "Your confirmation code",
                 f"Hello {name},\n\nYour confirmation code is {code}.\n"
                 f"It is valid for 10 minutes.\n"):
             flash("We could not send the e-mail. Please try again later.", "error")
             return render_template("register.html"), 502
         session["cid"] = cid
-        flash("If the address can be used, a 4-digit code is on its way.", "info")
+        flash("A 4-digit code is on its way to your e-mail.", "info")
         return redirect(url_for("verify"))
 
     # --------------------------------------------- 3. confirm the 4 digits

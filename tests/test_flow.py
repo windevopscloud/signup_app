@@ -158,6 +158,14 @@ class Flow(unittest.TestCase):
         self.assertIn(b"Log in", r.data)
         self.assertEqual(self.mail, [])
 
+    def test_register_with_existing_email_is_rejected(self):
+        self.register()
+        self.mail.clear()
+        r = self.post("/register", name="Again", email="asha@example.com")
+        self.assertIn(b"already registered", r.data)
+        self.assertNotIn(b"Enter the 4-digit code", r.data)
+        self.assertEqual(self.mail, [])
+
     def test_unknown_email_is_rejected_on_reset(self):
         r = self.post("/forgot", email="nobody@example.com")
         self.assertIn(b"No account found", r.data)
