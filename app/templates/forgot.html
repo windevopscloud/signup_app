@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block body %}
 <h1>Reset password</h1>
+<p>Enter your e-mail and we will send a code.</p>
 <form method="post">
   <input type="hidden" name="csrf" value="{{ csrf_token() }}">
-  <label for="email">E-mail</label><input id="email" name="email" type="email" required>
+  <label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required>
   <button>Send me a 4-digit code</button>
 </form>
+<p class="links"><a href="{{ url_for('login') }}">Back to log in</a></p>
 {% endblock %}

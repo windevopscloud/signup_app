@@ -1,8 +1,17 @@
 {% extends "base.html" %}
 {% block body %}
-<h1>Thank you for Joining {{ user.name }}, {{ user.email }}</h1>
-<p>Name: <strong>{{ user.name }}</strong><br>E-mail: <strong>{{ user.email }}</strong></p>
-<nav><a href="{{ url_for('change_email') }}">Update e-mail</a><a href="{{ url_for('forgot') }}">Reset password</a></nav>
+<div class="hello">
+  <div class="avatar">{{ (user.name or '?')[:1]|upper }}</div>
+  <h1>Thank you for Joining {{ user.name }}, {{ user.email }}</h1>
+</div>
+<div class="profile">
+  <div><span>Name</span><strong>{{ user.name }}</strong></div>
+  <div><span>E-mail</span><strong>{{ user.email }}</strong></div>
+</div>
+<div class="stack">
+  <a class="btn secondary" href="{{ url_for('change_email') }}">Update e-mail</a>
+  <a class="btn secondary" href="{{ url_for('forgot') }}">Reset password</a>
+</div>
 <form method="post" action="{{ url_for('logout') }}">
   <input type="hidden" name="csrf" value="{{ csrf_token() }}"><button>Log out</button>
 </form>
