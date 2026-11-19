@@ -104,7 +104,7 @@ class Flow(unittest.TestCase):
         r = self.register()
         self.assertIn(b"Password saved", r.data)
         r = self.post("/login", email="asha@example.com", password="correct-horse-1")
-        self.assertIn(b"Thank you for Joining Asha,", r.data)
+        self.assertIn(b"Thank you for Joining Asha", r.data)
         self.assertIn(b"asha@example.com", r.data)
 
         # change e-mail: one code to old, one to new

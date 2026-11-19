@@ -2,7 +2,7 @@
 {% block body %}
 <div class="hello">
   <div class="avatar">{{ (user.name or '?')[:1]|upper }}</div>
-  <h1>Thank you for Joining {{ user.name }}, {{ user.email }}</h1>
+  <h1>Thank you for Joining {{ user.name }}</h1>
 </div>
 <div class="profile">
   <div><span>Name</span><strong>{{ user.name }}</strong></div>
