@@ -35,7 +35,7 @@
         background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 12px rgba(99,102,241,.45)}
   main{width:100%;max-width:26rem}
   .card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.75rem;box-shadow:var(--shadow)}
-  h1{font-size:1.45rem;line-height:1.25;margin:0 0 .5rem}
+  h1{font-size:1.45rem;line-height:1.25;margin:0 0 .5rem;overflow-wrap:anywhere}
   p{margin:.5rem 0;color:var(--muted)}
   strong{color:var(--text)}
   label{display:block;margin:1rem 0 .35rem;font-size:.9rem;font-weight:600}
@@ -67,15 +67,15 @@
   .links a{margin:0 .35rem}
   nav a{margin-right:1rem}
   form.inline{display:inline}
-  .profile{margin:1.25rem 0;border:1px solid var(--line);border-radius:.75rem;overflow:hidden}
-  .profile div{display:flex;justify-content:space-between;gap:1rem;padding:.7rem .9rem}
-  .profile div+div{border-top:1px solid var(--line)}
-  .profile span{color:var(--muted)}
-  .profile strong{word-break:break-all;text-align:right}
-  .hello{display:flex;align-items:center;gap:.9rem;margin-bottom:.25rem}
+  .hello{display:flex;align-items:flex-start;gap:.9rem}
   .avatar{flex:none;width:3rem;height:3rem;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:1.2rem;
           background:linear-gradient(135deg,#6366f1,#8b5cf6)}
-  .hello h1{margin:0;font-size:1.2rem;word-break:break-word}
+  .hello h1{margin:0;font-size:1.2rem;min-width:0;flex:1;overflow-wrap:anywhere}
+  .profile{margin:1.25rem 0;border:1px solid var(--line);border-radius:.75rem;overflow:hidden}
+  .profile div{display:grid;grid-template-columns:5rem minmax(0,1fr);gap:1rem;align-items:start;padding:.7rem .9rem}
+  .profile div+div{border-top:1px solid var(--line)}
+  .profile span{color:var(--muted);white-space:nowrap}
+  .profile strong{text-align:left;overflow-wrap:anywhere}
   .foot{margin-top:1.5rem;font-size:.8rem;color:var(--muted)}
 </style>
 </head>
