@@ -4,3 +4,4 @@ resources:
   - 00-serviceaccount.yaml
   - 10-secretproviderclass.yaml
   - 30-deployment.yaml
+  - 40-ingress.yaml
