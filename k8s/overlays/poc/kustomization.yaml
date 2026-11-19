@@ -30,3 +30,10 @@ patches:
         name: signup-app
         annotations:
           eks.amazonaws.com/role-arn: arn:aws:iam::__ACCOUNT_ID__:role/signup-app-secrets-poc-role
+  - patch: |-
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: signup-app
+        annotations:
+          alb.ingress.kubernetes.io/certificate-arn: __CERT_ARN__

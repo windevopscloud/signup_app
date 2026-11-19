@@ -67,9 +67,10 @@ jobs:
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
           DB_HOST=$(aws ssm get-parameter --name "$DB_PARAM" --query Parameter.Value --output text)
+          CERT_ARN=$(aws ssm get-parameter --name "/${ENVIRONMENT}/acm/signup-cert-arn" --query Parameter.Value --output text)
           TAG="${GITHUB_SHA::7}"
           F=k8s/overlays/poc/kustomization.yaml
-          sed -i "s|__ACCOUNT_ID__|${ACCOUNT_ID}|g; s|__REGISTRY__|${REGISTRY}|g; s|__DB_HOST__|${DB_HOST}|g; s|__IMAGE_TAG__|${TAG}|g" "$F"
+          sed -i "s|__ACCOUNT_ID__|${ACCOUNT_ID}|g; s|__REGISTRY__|${REGISTRY}|g; s|__DB_HOST__|${DB_HOST}|g; s|__IMAGE_TAG__|${TAG}|g; s|__CERT_ARN__|${CERT_ARN}|g" "$F"
           if grep -q "__" "$F"; then echo "Unreplaced tokens"; cat "$F"; exit 1; fi
           echo "BUCKET=bundles-${ACCOUNT_ID}-${ENVIRONMENT}" >> "$GITHUB_ENV"
           echo "KEY=releases/${APP_NAME}/${TAG}-${GITHUB_RUN_NUMBER}.tgz" >> "$GITHUB_ENV"
