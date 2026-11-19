@@ -330,20 +330,23 @@ def create_app():
             return render_template("forgot.html"), 400
         with db.connect() as conn:
             user = conn.execute("SELECT id FROM users WHERE email=%s", (email,)).fetchone()
+            if not user:
+                flash("No account found with that e-mail address.", "error")
+                return render_template("forgot.html"), 404
             try:
                 cid, code, _ = create_challenge(conn, "reset", email,
-                                                user_id=user["id"] if user else None)
+                                                user_id=user["id"])
             except RateLimited:
                 flash("A code was sent a moment ago. Wait a minute before asking again.", "error")
                 return render_template("forgot.html"), 429
-        if user and not try_send(email, "Your password reset code",
+        if not try_send(email, "Your password reset code",
                                  f"Your password reset code is {code}.\n"
                                  f"It is valid for 10 minutes.\n"
                                  f"If you did not ask for this, ignore this e-mail.\n"):
             flash("We could not send the e-mail. Please try again later.", "error")
             return render_template("forgot.html"), 502
         session["cid"] = cid
-        flash("If the address is registered, a 4-digit code is on its way.", "info")
+        flash("A 4-digit code is on its way to your e-mail.", "info")
         return redirect(url_for("verify"))
 
     # ------------------------------------- 8-9. change e-mail, two codes

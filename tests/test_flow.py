@@ -104,7 +104,7 @@ class Flow(unittest.TestCase):
         r = self.register()
         self.assertIn(b"Password saved", r.data)
         r = self.post("/login", email="asha@example.com", password="correct-horse-1")
-        self.assertIn(b"Thank you for Joining Asha", r.data)
+        self.assertIn(b"Welcome, Asha", r.data)
         self.assertIn(b"asha@example.com", r.data)
 
         # change e-mail: one code to old, one to new
@@ -138,11 +138,12 @@ class Flow(unittest.TestCase):
         r = self.post("/login", email="asha@example.com", password="correct-horse-1")
         self.assertIn(b"not right", r.data)
         r = self.post("/login", email="asha@example.com", password="brand-new-pass-2")
-        self.assertIn(b"Thank you for Joining Asha", r.data)
+        self.assertIn(b"Welcome, Asha", r.data)
 
-    def test_unknown_email_gets_no_mail_and_same_screen(self):
+    def test_unknown_email_is_rejected_on_reset(self):
         r = self.post("/forgot", email="nobody@example.com")
-        self.assertIn(b"Enter the 4-digit code", r.data)
+        self.assertIn(b"No account found", r.data)
+        self.assertNotIn(b"Enter the 4-digit code", r.data)
         self.assertEqual(self.mail, [])
 
     def test_csrf_required(self):
