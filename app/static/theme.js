@@ -5,10 +5,7 @@
   function apply(t) {
     root.setAttribute("data-theme", t);
     var b = document.getElementById("theme-toggle");
-    if (b) {
-      b.setAttribute("aria-label", t === "dark" ? "Switch to light theme" : "Switch to dark theme");
-      b.setAttribute("title", t === "dark" ? "Switch to light theme" : "Switch to dark theme");
-    }
+    if (b) { b.setAttribute("aria-checked", t === "dark" ? "true" : "false"); }
   }
   var s = stored();
   apply(s === "light" || s === "dark" ? s : (systemDark() ? "dark" : "light"));
