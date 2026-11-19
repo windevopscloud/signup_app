@@ -2,7 +2,7 @@
 {% block body %}
 <div class="hello">
   <div class="avatar">{{ (user.name or '?')[:1]|upper }}</div>
-  <h1>Thank you for Joining {{ user.name }}</h1>
+  <h1>Welcome, {{ user.name }}</h1>
 </div>
 <div class="profile">
   <div><span>Name</span><strong>{{ user.name }}</strong></div>
@@ -10,7 +10,9 @@
 </div>
 <div class="stack">
   <a class="btn secondary" href="{{ url_for('change_email') }}">Update e-mail</a>
-  <a class="btn secondary" href="{{ url_for('forgot') }}">Reset password</a>
+  <form method="post" action="{{ url_for('account_password') }}">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="secondary">Reset password</button>
+  </form>
 </div>
 <form method="post" action="{{ url_for('logout') }}">
   <input type="hidden" name="csrf" value="{{ csrf_token() }}"><button>Log out</button>

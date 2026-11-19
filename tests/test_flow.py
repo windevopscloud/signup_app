@@ -140,6 +140,24 @@ class Flow(unittest.TestCase):
         r = self.post("/login", email="asha@example.com", password="brand-new-pass-2")
         self.assertIn(b"Welcome, Asha", r.data)
 
+    def test_logged_in_reset_sends_code_without_asking_for_email(self):
+        self.register()
+        self.post("/login", email="asha@example.com", password="correct-horse-1")
+        self.mail.clear()
+        r = self.post("/account/password")
+        self.assertIn(b"Enter the 4-digit code", r.data)
+        self.assertIn(b"registered e-mail", r.data)
+        self.assertEqual([m[0] for m in self.mail], ["asha@example.com"])
+        self.post("/verify", code=self.last_code("asha@example.com"))
+        self.post("/set-password", password="another-pass-33", password2="another-pass-33")
+        r = self.post("/login", email="asha@example.com", password="another-pass-33")
+        self.assertIn(b"Welcome, Asha", r.data)
+
+    def test_account_password_needs_login(self):
+        r = self.post("/account/password")
+        self.assertIn(b"Log in", r.data)
+        self.assertEqual(self.mail, [])
+
     def test_unknown_email_is_rejected_on_reset(self):
         r = self.post("/forgot", email="nobody@example.com")
         self.assertIn(b"No account found", r.data)

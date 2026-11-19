@@ -349,6 +349,29 @@ def create_app():
         flash("A 4-digit code is on its way to your e-mail.", "info")
         return redirect(url_for("verify"))
 
+    # ------------------------- reset password while logged in (no e-mail form)
+    @app.post("/account/password")
+    def account_password():
+        with db.connect() as conn:
+            user = current_user(conn)
+            if not user:
+                return redirect(url_for("login"))
+            try:
+                cid, code, _ = create_challenge(conn, "reset", user["email"],
+                                                user_id=user["id"])
+            except RateLimited:
+                flash("A code was sent a moment ago. Wait a minute before asking again.", "error")
+                return redirect(url_for("index"))
+        if not try_send(user["email"], "Your password reset code",
+                        f"Your password reset code is {code}.\n"
+                        f"It is valid for 10 minutes.\n"
+                        f"If you did not ask for this, ignore this e-mail.\n"):
+            flash("We could not send the e-mail. Please try again later.", "error")
+            return redirect(url_for("index"))
+        session["cid"] = cid
+        flash("We sent a 4-digit code to your registered e-mail.", "info")
+        return redirect(url_for("verify"))
+
     # ------------------------------------- 8-9. change e-mail, two codes
     @app.route("/account/email", methods=["GET", "POST"])
     def change_email():
