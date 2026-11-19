@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>Update name</h1>
+<p>Current: <strong>{{ user.name }}</strong></p>
+<form method="post">
+  <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+  <label for="name">New name</label><input id="name" name="name" maxlength="80" autocomplete="name" required>
+  <button>Save name</button>
+</form>
+<div class="stack tight"><a class="btn secondary" href="{{ url_for('index') }}">Cancel</a></div>
+{% endblock %}

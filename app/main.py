@@ -350,6 +350,26 @@ def create_app():
         flash("A 4-digit code is on its way to your e-mail.", "info")
         return redirect(url_for("verify"))
 
+    # ------------------------------------------------------ update name
+    @app.route("/account/name", methods=["GET", "POST"])
+    def change_name():
+        with db.connect() as conn:
+            user = current_user(conn)
+            if not user:
+                return redirect(url_for("login"))
+            if request.method == "GET":
+                return render_template("change_name.html", user=user)
+            name = " ".join(request.form.get("name", "").split())
+            if not 1 <= len(name) <= 80:
+                flash("Enter a name of 1 to 80 characters.", "error")
+                return render_template("change_name.html", user=user), 400
+            if name == user["name"]:
+                flash("That is already your name.", "error")
+                return render_template("change_name.html", user=user), 400
+            conn.execute("UPDATE users SET name=%s WHERE id=%s", (name, user["id"]))
+        flash("Your name was updated.", "info")
+        return redirect(url_for("index"))
+
     # ------------------------- reset password while logged in (no e-mail form)
     @app.post("/account/password")
     def account_password():

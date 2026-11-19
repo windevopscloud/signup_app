@@ -166,6 +166,22 @@ class Flow(unittest.TestCase):
         self.assertNotIn(b"Enter the 4-digit code", r.data)
         self.assertEqual(self.mail, [])
 
+    def test_update_name(self):
+        self.register()
+        self.post("/login", email="asha@example.com", password="correct-horse-1")
+        r = self.c.get("/account/name")
+        self.assertIn(b"Update name", r.data)
+        r = self.post("/account/name", name="  Asha   Rao ")
+        self.assertIn(b"Welcome, Asha Rao", r.data)
+        r = self.post("/account/name", name="Asha Rao")
+        self.assertIn(b"already your name", r.data)
+        r = self.post("/account/name", name="   ")
+        self.assertIn(b"1 to 80", r.data)
+
+    def test_update_name_needs_login(self):
+        r = self.c.get("/account/name", follow_redirects=True)
+        self.assertIn(b"Log in", r.data)
+
     def test_unknown_email_is_rejected_on_reset(self):
         r = self.post("/forgot", email="nobody@example.com")
         self.assertIn(b"No account found", r.data)
