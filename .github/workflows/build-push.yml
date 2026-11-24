@@ -16,8 +16,8 @@ on:
       - "requirements.txt"
 
 env:
-  AWS_REGION: us-east-1
-  AWS_DEFAULT_REGION: us-east-1
+  AWS_REGION: us-west-2
+  AWS_DEFAULT_REGION: us-west-2
   ECR_REPO: signup-app
   APP_NAME: signup-app
   ENVIRONMENT: poc
