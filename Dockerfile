@@ -6,5 +6,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY app ./app
 USER 10001
-EXPOSE 8000
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--access-logfile", "-", "app.main:create_app()"]
+EXPOSE 8443
+# HTTPS inside the pod (self-signed, made at start)
+CMD ["python", "-m", "app.serve"]

@@ -21,7 +21,7 @@ spec:
       containers:
         - name: app
           image: signup-app
-          ports: [{containerPort: 8000}]
+          ports: [{containerPort: 8443}]
           envFrom: [{configMapRef: {name: signup-config}}]
           env:
             - {name: DB_USER_FILE,      value: /mnt/secrets-store/db-user}
@@ -31,8 +31,8 @@ spec:
             - {name: SECRET_KEY_FILE,   value: /mnt/secrets-store/secret-key}
           volumeMounts:
             - {name: secrets, mountPath: /mnt/secrets-store, readOnly: true}
-          readinessProbe: {httpGet: {path: /readyz, port: 8000}, periodSeconds: 5}
-          livenessProbe: {httpGet: {path: /healthz, port: 8000}, periodSeconds: 10}
+          readinessProbe: {httpGet: {path: /readyz, port: 8443, scheme: HTTPS}, periodSeconds: 5}
+          livenessProbe: {httpGet: {path: /healthz, port: 8443, scheme: HTTPS}, periodSeconds: 10}
           resources:
             requests: {cpu: 100m, memory: 128Mi}
             limits: {memory: 256Mi}
@@ -53,4 +53,4 @@ metadata:
 spec:
   type: ClusterIP
   selector: {app: signup-app}
-  ports: [{port: 80, targetPort: 8000}]
+  ports: [{name: https, port: 443, targetPort: 8443}]

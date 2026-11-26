@@ -9,6 +9,8 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: "443"
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:000000000000:certificate/placeholder
+    alb.ingress.kubernetes.io/backend-protocol: HTTPS      # ALB -> pod is encrypted (pod cert is self-signed, ALB does not validate it)
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTPS
     alb.ingress.kubernetes.io/healthcheck-path: /healthz
     alb.ingress.kubernetes.io/tags: Environment=poc
 spec:
@@ -23,4 +25,4 @@ spec:
               service:
                 name: signup-app
                 port:
-                  number: 80
+                  number: 443
