@@ -32,3 +32,19 @@ done
 
 kubectl rollout status deployment/signup-app -n default --timeout=300s
 kubectl get pods -n default -l app=signup-app
+
+# The ALB address for the DNS record (shown at the end of the deploy job log)
+echo "Waiting for the ALB address..."
+ALB=""
+for i in $(seq 1 30); do
+  ALB=$(kubectl get ingress signup-app -n default -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || true)
+  [ -n "$ALB" ] && break
+  sleep 10
+done
+if [ -n "$ALB" ]; then
+  echo "=============================================================="
+  echo "DNS: create CNAME  signup.windevopscloud.com  ->  ${ALB}"
+  echo "=============================================================="
+else
+  echo "ALB address not ready yet. Run: kubectl get ingress signup-app -n default"
+fi
