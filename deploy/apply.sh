@@ -8,6 +8,9 @@ if grep -rq "__[A-Z_]*__" k8s/overlays/poc; then
   echo "Unreplaced tokens found"; exit 1
 fi
 
+# Create or sync the dedicated DB user (password comes from Secrets Manager)
+bash deploy/db-bootstrap.sh
+
 # The Ingress and Service are checked by the AWS Load Balancer Controller's webhooks,
 # so the controller must be running before we apply.
 echo "Waiting for the AWS Load Balancer Controller..."

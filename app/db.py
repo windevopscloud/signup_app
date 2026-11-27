@@ -3,7 +3,7 @@ import logging
 import time
 
 import psycopg
-from psycopg.errors import UniqueViolation  # noqa: F401  (re-exported)
+from psycopg.errors import InvalidPassword, UniqueViolation  # noqa: F401  (re-exported)
 from psycopg.rows import dict_row
 
 from . import config
@@ -11,9 +11,7 @@ from . import config
 log = logging.getLogger(__name__)
 
 
-def connect():
-    """One short connection per request. User and password are read from the
-    mounted secret files each time, so a rotated login is picked up."""
+def _open():
     return psycopg.connect(
         host=config.get("DB_HOST"),
         port=int(config.get("DB_PORT", "5432")),
@@ -24,6 +22,21 @@ def connect():
         connect_timeout=5,
         row_factory=dict_row,
     )
+
+
+def connect(retries=10, delay=5):
+    """One short connection per request. User and password are read from the
+    mounted secret files each time, so a rotated login is picked up. Right after
+    a rotation the file can lag by up to the CSI poll interval, so a password
+    failure is retried a few times (the files are re-read on every attempt)."""
+    for attempt in range(1, retries + 1):
+        try:
+            return _open()
+        except InvalidPassword:
+            if attempt == retries:
+                raise
+            log.warning("db password rejected, waiting for rotated secret (%s/%s)", attempt, retries)
+            time.sleep(delay)
 
 
 SCHEMA = [
